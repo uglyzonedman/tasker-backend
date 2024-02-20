@@ -4,6 +4,7 @@ import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api-v2');
   const allowedOrigins = [
     'http://localhost:3000',

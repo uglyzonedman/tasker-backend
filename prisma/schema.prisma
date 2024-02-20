@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,17 +8,81 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  email          String   @unique
-  login          String   @unique
-  password       String
-  phone          String   @default("")
-  dateBorn       String   @default("") @map("date_born")
-  avatarPath     String   @default("") @map("avatar_path")
-  name           String   @default("")
-  surname        String   @default("")
-  description    String   @default("")
-  lastOnlineTime DateTime @default(now())
+  id                     String                   @id @unique @default(uuid())
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  email                  String                   @unique
+  login                  String                   @unique
+  password               String
+  phone                  String                   @default("")
+  dateBorn               String                   @default("") @map("date_born")
+  avatarPath             String                   @default("") @map("avatar_path")
+  name                   String                   @default("")
+  surname                String                   @default("")
+  description            String                   @default("")
+  lastOnlineTime         DateTime                 @default(now())
+  Project                Project[]
+  ProjectCollaboratorion ProjectCollaboratorion[]
+
+  @@map("user")
+}
+
+model Project {
+  id                     String                   @id @unique @default(uuid())
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  name                   String
+  color                  String
+  isFavorited            Boolean                  @map("is_favorited")
+  ownerId                String?                  @map("owner_id")
+  User                   User?                    @relation(fields: [ownerId], references: [id])
+  ProjectCollaboratorion ProjectCollaboratorion[]
+  ProjectItem            ProjectItem[]
+
+  @@map("project")
+}
+
+model ProjectCollaboratorion {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  projectId String   @map("project_id")
+  Project   Project? @relation(fields: [projectId], references: [id])
+  userId    String?  @map("user_id")
+  User      User?    @relation(fields: [userId], references: [id])
+
+  @@map("project_collaboratorion")
+}
+
+model ProjectItem {
+  id          String   @id @unique @default(uuid())
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  name        String
+  description String?  @default("")
+  projectId   String   @map("project_id")
+  Project     Project? @relation(fields: [projectId], references: [id])
+  Task        Task[]
+
+  @@map("project_item")
+}
+
+model Task {
+  id            String       @id @unique @default(uuid())
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  name          String
+  description   String?      @default("")
+  deadline      String?      @default("")
+  priority      Priority?
+  projectItemId String       @map("project_item_id")
+  ProjectItem   ProjectItem? @relation(fields: [projectItemId], references: [id])
+
+  @@map("task")
+}
+
+enum Priority {
+  high
+  medium
+  low
 }
