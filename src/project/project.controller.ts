@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {
   CreateProjectDto,
@@ -49,5 +49,17 @@ export class ProjectController {
     @Body() dto: CreateProjectItemDto,
   ) {
     return await this.projectService.createProjectItem(projectId, dto);
+  }
+
+  @Get('favorite')
+  @Auth()
+  async favoritedProjectsById(@CurrentUser('id') id: string) {
+    return await this.projectService.favoritedProjectsById(id);
+  }
+
+  @Put('change/:id')
+  @Auth()
+  async changeTaskCompleted(@Param('id') id: string) {
+    return await this.projectService.changeTaskCompleted(id);
   }
 }

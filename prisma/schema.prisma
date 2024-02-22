@@ -38,6 +38,7 @@ model Project {
   User                   User?                    @relation(fields: [ownerId], references: [id])
   ProjectCollaboratorion ProjectCollaboratorion[]
   ProjectItem            ProjectItem[]
+  Favorite               Favorite[]
 
   @@map("project")
 }
@@ -77,8 +78,19 @@ model Task {
   priority      Priority?
   projectItemId String       @map("project_item_id")
   ProjectItem   ProjectItem? @relation(fields: [projectItemId], references: [id])
+  isCompleted   Boolean      @default(false) @map("is_completed")
 
   @@map("task")
+}
+
+model Favorite {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  projectId String   @map("project_id")
+  Project   Project? @relation(fields: [projectId], references: [id])
+
+  @@map("favorite")
 }
 
 enum Priority {

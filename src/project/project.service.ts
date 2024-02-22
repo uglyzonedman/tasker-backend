@@ -122,6 +122,7 @@ export class ProjectService {
             name: true,
             priority: true,
             updatedAt: true,
+            isCompleted: true,
           },
         },
       },
@@ -133,11 +134,53 @@ export class ProjectService {
     };
   }
 
+  async favoritedProjectsById(userId: string) {
+    const projects = await this.prismaService.project.findMany({
+      where: {
+        User: {
+          id: userId,
+        },
+        isFavorited: true,
+      },
+      select: {
+        color: true,
+        createdAt: true,
+        id: true,
+        isFavorited: true,
+        name: true,
+        ownerId: true,
+        updatedAt: true,
+        ProjectCollaboratorion: {
+          select: {
+            id: true,
+            User: {
+              select: {
+                avatarPath: true,
+                createdAt: true,
+                name: true,
+                dateBorn: true,
+                description: true,
+                email: true,
+                id: true,
+                lastOnlineTime: true,
+                login: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      projects: projects,
+      total_projects: projects.length,
+    };
+  }
   async createTask(projectItemId: string, dto: CreateTaskDto) {
     return await this.prismaService.task.create({
       data: {
         name: dto.name,
         description: dto.description,
+        priority: dto.priority,
         ProjectItem: {
           connect: {
             id: projectItemId,
@@ -156,6 +199,27 @@ export class ProjectService {
           },
         },
         name: dto.name,
+      },
+    });
+  }
+
+  async changeTaskCompleted(taskId: string) {
+    const task = await this.prismaService.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!task) {
+      throw new Error(`Task with ID ${taskId} not found`);
+    }
+
+    return await this.prismaService.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        isCompleted: !task.isCompleted,
       },
     });
   }
