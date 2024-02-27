@@ -103,6 +103,7 @@ export class ProjectService {
         },
       },
     });
+
     const projectItems = await this.prismaService.projectItem.findMany({
       where: {
         projectId: projectId,
@@ -124,9 +125,26 @@ export class ProjectService {
             updatedAt: true,
             isCompleted: true,
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
         },
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
     });
+
+    projectItems.forEach((item) => {
+      if (item.Task) {
+        item.Task.sort((a, b) => {
+          const isCompletedA = a.isCompleted ? 0 : 1;
+          const isCompletedB = b.isCompleted ? 0 : 1;
+          return isCompletedB - isCompletedA;
+        });
+      }
+    });
+
     return {
       projectItems: projectItems,
       total_projectItems: projectItems.length,
@@ -169,6 +187,9 @@ export class ProjectService {
           },
         },
       },
+      orderBy: {
+        updatedAt: 'asc',
+      },
     });
     return {
       projects: projects,
@@ -181,6 +202,7 @@ export class ProjectService {
         name: dto.name,
         description: dto.description,
         priority: dto.priority,
+        deadline: dto.deadline,
         ProjectItem: {
           connect: {
             id: projectItemId,
@@ -220,6 +242,61 @@ export class ProjectService {
       },
       data: {
         isCompleted: !task.isCompleted,
+      },
+    });
+  }
+
+  async updateProjectName(projectId: string, name: string) {
+    return await this.prismaService.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        name,
+      },
+    });
+  }
+
+  async updateProjectItemName(projectItemId: string, name: string) {
+    return await this.prismaService.projectItem.update({
+      where: {
+        id: projectItemId,
+      },
+      data: {
+        name: name,
+      },
+    });
+  }
+
+  async updateTaskById(taskId: string, dto: CreateTaskDto) {
+    return await this.prismaService.task.update({
+      where: { id: taskId },
+      data: {
+        name: dto.name,
+        priority: dto.priority,
+        description: dto.description,
+      },
+    });
+  }
+  async deleteProject(projectId: string) {
+    return await this.prismaService.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
+  }
+
+  async deleteProjectItem(projectItemId: string) {
+    return await this.prismaService.projectItem.delete({
+      where: {
+        id: projectItemId,
+      },
+    });
+  }
+  async deleteTask(taskId: string) {
+    return await this.prismaService.task.delete({
+      where: {
+        id: taskId,
       },
     });
   }

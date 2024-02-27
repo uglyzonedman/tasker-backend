@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {
   CreateProjectDto,
@@ -61,5 +69,48 @@ export class ProjectController {
   @Auth()
   async changeTaskCompleted(@Param('id') id: string) {
     return await this.projectService.changeTaskCompleted(id);
+  }
+
+  @Put('update-project-name/:projectId')
+  @Auth()
+  async updateProjectName(
+    @Param('projectId') projectId: string,
+    @Body('name') name: string,
+  ) {
+    return await this.projectService.updateProjectName(projectId, name);
+  }
+  @Put('update-project-item-name/:projectItemId')
+  @Auth()
+  async updateProjectItemName(
+    @Param('projectItemId') projectItemId: string,
+    @Body('name') name: string,
+  ) {
+    return await this.projectService.updateProjectItemName(projectItemId, name);
+  }
+
+  @Put('update-task/:taskId')
+  @Auth()
+  async updateTaskById(
+    @Param('taskId') taskId: string,
+    @Body() dto: CreateTaskDto,
+  ) {
+    return await this.projectService.updateTaskById(taskId, dto);
+  }
+
+  @Delete('delete-project/:projectId')
+  @Auth()
+  async deleteProject(@Param('projectId') projectId: string) {
+    return await this.projectService.deleteProject(projectId);
+  }
+  @Delete('delete-project-item/:projectItemId')
+  @Auth()
+  async deleteProjectItem(@Param('projectItemId') projectItemId: string) {
+    return await this.projectService.deleteProjectItem(projectItemId);
+  }
+
+  @Delete('delete-task/:taskId')
+  @Auth()
+  async deleteTask(@Param('taskId') taskId: string) {
+    return await this.projectService.deleteTask(taskId);
   }
 }

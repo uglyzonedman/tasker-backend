@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
 }
 
 datasource db {
@@ -35,7 +36,7 @@ model Project {
   color                  String
   isFavorited            Boolean                  @map("is_favorited")
   ownerId                String?                  @map("owner_id")
-  User                   User?                    @relation(fields: [ownerId], references: [id])
+  User                   User?                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ProjectCollaboratorion ProjectCollaboratorion[]
   ProjectItem            ProjectItem[]
   Favorite               Favorite[]
@@ -48,9 +49,9 @@ model ProjectCollaboratorion {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   projectId String   @map("project_id")
-  Project   Project? @relation(fields: [projectId], references: [id])
+  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   userId    String?  @map("user_id")
-  User      User?    @relation(fields: [userId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("project_collaboratorion")
 }
@@ -62,7 +63,7 @@ model ProjectItem {
   name        String
   description String?  @default("")
   projectId   String   @map("project_id")
-  Project     Project? @relation(fields: [projectId], references: [id])
+  Project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   Task        Task[]
 
   @@map("project_item")
@@ -77,7 +78,7 @@ model Task {
   deadline      String?      @default("")
   priority      Priority?
   projectItemId String       @map("project_item_id")
-  ProjectItem   ProjectItem? @relation(fields: [projectItemId], references: [id])
+  ProjectItem   ProjectItem? @relation(fields: [projectItemId], references: [id], onDelete: Cascade)
   isCompleted   Boolean      @default(false) @map("is_completed")
 
   @@map("task")
@@ -88,7 +89,7 @@ model Favorite {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   projectId String   @map("project_id")
-  Project   Project? @relation(fields: [projectId], references: [id])
+  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("favorite")
 }

@@ -8,6 +8,7 @@ export class CreateTaskDto {
   name: string;
   description: string;
   priority: 'high' | 'medium' | 'low';
+  deadline: string;
 }
 
 export class CreateProjectItemDto {
