@@ -7,7 +7,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api-v2');
   const allowedOrigins = [
-    'http://31.129.45.243:3000',
+    'http://31.129.45.243:3005',
     'http://31.129.45.243:7776',
     'http://localhost:3000',
     'http://194.169.160.152',
